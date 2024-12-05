@@ -167,7 +167,6 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
-vim.keymap.set('n', '<C-n>', ':Neotree filesystem reveal left<CR>', {})
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -438,6 +437,26 @@ require('lazy').setup({
     end,
   },
   {
+    'ThePrimeagen/refactoring.nvim',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'nvim-treesitter/nvim-treesitter',
+    },
+    config = function()
+      require('refactoring').setup()
+      vim.keymap.set('x', '<leader>re', ':Refactor extract ')
+      vim.keymap.set('x', '<leader>rf', ':Refactor extract_to_file ')
+      vim.keymap.set('x', '<leader>rv', ':Refactor extract_var ')
+
+      vim.keymap.set({ 'n', 'x' }, '<leader>ri', ':Refactor inline_var')
+
+      vim.keymap.set('n', '<leader>rI', ':Refactor inline_func')
+
+      vim.keymap.set('n', '<leader>rb', ':Refactor extract_block')
+      vim.keymap.set('n', '<leader>rbf', ':Refactor extract_block_to_file')
+    end,
+  },
+  {
     'nvim-orgmode/orgmode',
     event = 'VeryLazy',
     ft = { 'org' },
@@ -457,6 +476,13 @@ require('lazy').setup({
     end,
   },
   {
+    'tadmccorkle/markdown.nvim',
+    ft = 'markdown', -- or 'event = "VeryLazy"'
+    opts = {
+      -- configuration here or empty for defaults
+    },
+  },
+  {
     'chipsenkbeil/org-roam.nvim',
     tag = '0.1.0',
     dependencies = {
@@ -467,18 +493,9 @@ require('lazy').setup({
     },
     config = function()
       require('org-roam').setup {
-        directory = '~/Dropbox/notes/nvim',
+        directory = '/Users/ptajthy/OneDrive - Genesys Telecommunications Laboratories, Inc/notes',
       }
     end,
-  },
-  {
-    'nvim-neo-tree/neo-tree.nvim',
-    branch = 'v3.x',
-    dependencies = {
-      'nvim-lua/plenary.nvim',
-      'nvim-tree/nvim-web-devicons',
-      'MunifTanjim/nui.nvim',
-    },
   },
   -- LSP Plugins
   {
@@ -650,7 +667,17 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = 'workspace',
+              },
+            },
+          },
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -964,7 +991,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
   -- require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
+  require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
