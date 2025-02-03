@@ -157,6 +157,28 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+-- Folding options
+vim.opt.foldcolumn = '0'
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.opt.foldtext = ''
+
+vim.opt.foldnestmax = 3
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+
+local function close_all_folds()
+  vim.api.nvim_exec2('%foldc!', { output = false })
+end
+local function open_all_folds()
+  vim.api.nvim_exec2('%foldo!', { output = false })
+end
+
+vim.keymap.set('n', '<leader>zs', close_all_folds, { desc = '[s]hut all folds' })
+vim.keymap.set('n', '<leader>zo', open_all_folds, { desc = '[o]pen all folds' })
+-- set jq for hanndling json
+vim.keymap.set('n', '<leader>jq', ':%!jq "."<CR>', { noremap = true })
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -255,7 +277,6 @@ require('lazy').setup({
       },
     },
   },
-
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -435,6 +456,69 @@ require('lazy').setup({
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
     end,
+  },
+  { 'nvim-neotest/nvim-nio' },
+  {
+    'nvim-neotest/neotest',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'antoinemadec/FixCursorHold.nvim',
+      'nvim-treesitter/nvim-treesitter',
+      'nvim-neotest/neotest-python',
+    },
+    config = function()
+      local neotest = require 'neotest'
+      neotest.setup {
+        adapters = {
+          require 'neotest-python' {
+            -- Extra arguments for pytest
+            args = { '--verbose' },
+            -- Runner to use. Will use pytest by default
+            runner = 'pytest',
+          },
+        },
+      }
+
+      -- Keymaps
+      vim.keymap.set('n', '<leader>tt', function()
+        neotest.run.run() -- Run nearest test
+      end, { desc = 'Run neares[T] [T]est' })
+      vim.keymap.set('n', '<leader>tf', function()
+        neotest.run.run(vim.fn.expand '%') -- Run current file
+      end, { desc = 'Run curren[T] [F]ile' })
+      vim.keymap.set('n', '<leader>ts', function()
+        neotest.run.run { suite = true } -- Run all test files
+      end, { desc = 'Run all [T]est file[S]' })
+      vim.keymap.set('n', '<leader>to', function()
+        neotest.output.open { enter = true } -- Open test output
+      end, { desc = 'Open [T]est [O]utput' })
+      vim.keymap.set('n', '<leader>tp', function()
+        neotest.output_panel.toggle() -- Toggle output panel
+      end, { desc = '[T]oggle output [P]anel' })
+      vim.keymap.set('n', '<leader>tw', function()
+        neotest.watch.toggle() -- Toggle watching test
+      end, { desc = '[T]oggle [W]atching [P]anel' })
+      vim.keymap.set('n', '<leader>tC', function()
+        neotest.run.run { args = { '--cov' } }
+      end, { desc = '[T]est All with [C]overage' })
+    end,
+  },
+  {
+    'kdheepak/lazygit.nvim',
+    lazy = true,
+    cmd = {
+        "LazyGit",
+        "LazyGitConfig",
+        "LazyGitCurrentFile",
+        "LazyGitFilter",
+        "LazyGitFilterCurrentFile",
+    },
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+    },
+    keys = {
+        { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+    }
   },
   {
     'ThePrimeagen/refactoring.nvim',
