@@ -40,6 +40,9 @@ return {
       vim.keymap.set('n', '<leader>tw', function()
         neotest.watch.toggle() -- Toggle watching test
       end, { desc = '[T]oggle [W]atching [P]anel' })
+      vim.keymap.set('n', '<leader>td', function()
+        neotest.run.run { strategy = 'dap' } -- Debug test
+      end, { desc = '[T]est [D]ebug' })
       vim.keymap.set('n', '<leader>tC', function()
         neotest.run.run { args = { '--cov' } }
       end, { desc = '[T]est All with [C]overage' })

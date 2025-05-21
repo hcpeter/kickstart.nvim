@@ -151,7 +151,7 @@ require('lazy').setup({
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-  'kickstart.plugins.gitsigns',
+  require 'kickstart.plugins.gitsigns',
   require 'kickstart.plugins.which-key',
   require 'kickstart.plugins.telescope',
   require 'kickstart.plugins.neotest',
